@@ -1,0 +1,63 @@
+import React, { useContext } from 'react'
+import { CaptainDataContext } from './Frontend/src/context/CaptainContext'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+
+const CaptainHome = () => {
+  const { captain } = useContext(CaptainDataContext)
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+     
+    try {
+      const token = localStorage.getItem('token')
+      await axios.get(`${import.meta.env.VITE_BASE_URL}/captains/logout`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      localStorage.removeItem('token')
+      navigate('/captain-login')
+    } catch (err) {
+      // console.error('Logout error:', err)
+      localStorage.removeItem('token')
+      navigate('/captain-login')
+    }
+  }
+
+  return (
+
+   
+    
+   
+    <div className='h-screen'>
+      <div className='flex justify-between items-center p-5'>
+      
+    
+        <img className='w-16' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="Uber Logo" />
+        <button
+          onClick={handleLogout}
+          className='bg-red-500 text-white px-4 py-2 rounded'
+        >
+          Logout
+        </button>
+      </div>
+      <div className='p-5'>
+        <h2 className='text-2xl font-bold mb-4'>Welcome, Captain {captain?.fullName?.firstName || 'Driver'}!</h2>
+        <div className='bg-gray-100 p-4 rounded mb-4'>
+          <p><strong>Email:</strong> {captain?.email}</p>
+          <p><strong>Name:</strong> {captain?.fullName?.firstName} {captain?.fullName?.lastName}</p>
+        </div>
+        <div className='bg-blue-100 p-4 rounded'>
+          <h3 className='text-lg font-bold mb-2'>Vehicle Information</h3>
+          <p><strong>Type:</strong> {captain?.vehicle?.vehicleType}</p>
+          <p><strong>Color:</strong> {captain?.vehicle?.color}</p>
+          <p><strong>Plate:</strong> {captain?.vehicle?.plate}</p>
+          <p><strong>Capacity:</strong> {captain?.vehicle?.capacity} Passengers</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default CaptainHome

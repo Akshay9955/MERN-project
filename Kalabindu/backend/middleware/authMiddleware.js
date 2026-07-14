@@ -1,0 +1,17 @@
+import jwt from "jsonwebtoken";
+
+export const authenticate = (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1]; // Extract "Bearer <token>"
+    
+    if (!token) {
+      return res.status(401).json({ message: "No token provided. Please log in." });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // decoded contains { id: user._id }
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid or expired token. Please log in again." });
+  }
+};
